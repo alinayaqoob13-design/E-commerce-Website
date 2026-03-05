@@ -1,0 +1,246 @@
+import React, { useState } from 'react';
+import { User, Mail, Phone, MapPin, Camera, Edit2, Save, X } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
+import Button from '../common/Button';
+
+const Profile = () => {
+  const { user, updateProfile } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    bio: user?.bio || '',
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    await updateProfile(formData);
+    setLoading(false);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
+      bio: user?.bio || '',
+    });
+    setIsEditing(false);
+  };
+
+  const stats = [
+    { label: 'Orders', value: 12 },
+    { label: 'Wishlist', value: 24 },
+    { label: 'Reviews', value: 8 },
+    { label: 'Points', value: 1250 },
+  ];
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      {/* Profile Header */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+        <div className="h-32 bg-gradient-to-r from-primary-600 to-primary-400" />
+        <div className="px-8 pb-8">
+          <div className="relative flex flex-col sm:flex-row items-start sm:items-end -mt-12 mb-6 gap-4">
+            {/* Avatar */}
+            <div className="relative">
+              <div className="w-24 h-24 rounded-full bg-white p-1 shadow-lg">
+                <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center">
+                  <User className="w-12 h-12 text-gray-400" />
+                </div>
+              </div>
+              <button className="absolute bottom-0 right-0 w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-primary-700 transition-colors">
+                <Camera className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* User Info */}
+            <div className="flex-1">
+              <h1 className="text-2xl font-bold text-gray-900">
+                {user?.firstName} {user?.lastName}
+              </h1>
+              <p className="text-gray-500">{user?.email}</p>
+            </div>
+
+            {/* Edit Button */}
+            {!isEditing && (
+              <Button
+                variant="outline"
+                icon={Edit2}
+                onClick={() => setIsEditing(true)}
+              >
+                Edit Profile
+              </Button>
+            )}
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {stats.map((stat) => (
+              <div key={stat.label} className="text-center p-4 bg-gray-50 rounded-xl">
+                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-sm text-gray-500">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Profile Form */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <h2 className="text-xl font-bold text-gray-900 mb-6">Personal Information</h2>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid sm:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                First Name
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50 disabled:text-gray-500"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Last Name
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50 disabled:text-gray-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50 disabled:text-gray-500"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50 disabled:text-gray-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Bio
+            </label>
+            <textarea
+              name="bio"
+              value={formData.bio}
+              onChange={handleChange}
+              disabled={!isEditing}
+              rows={4}
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50 disabled:text-gray-500 resize-none"
+              placeholder="Tell us a little about yourself..."
+            />
+          </div>
+
+          {isEditing && (
+            <div className="flex items-center gap-4 pt-4">
+              <Button
+                type="submit"
+                variant="primary"
+                icon={Save}
+                loading={loading}
+              >
+                Save Changes
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                icon={X}
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
+        </form>
+      </div>
+
+      {/* Addresses Section */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mt-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-gray-900">Saved Addresses</h2>
+          <Button variant="outline" size="sm">Add New Address</Button>
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="border-2 border-primary-600 rounded-xl p-4 relative">
+            <span className="absolute top-4 right-4 text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded">
+              Default
+            </span>
+            <div className="flex items-center gap-2 mb-2">
+              <MapPin className="w-5 h-5 text-primary-600" />
+              <span className="font-medium">Home</span>
+            </div>
+            <p className="text-gray-600 text-sm">
+              123 Main Street, Apt 4B<br />
+              Mumbai, Maharashtra - 400001<br />
+              +91 98765 43210
+            </p>
+            <div className="flex items-center gap-2 mt-4">
+              <button className="text-sm text-primary-600 hover:underline">Edit</button>
+              <span className="text-gray-300">|</span>
+              <button className="text-sm text-red-500 hover:underline">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Profile;
